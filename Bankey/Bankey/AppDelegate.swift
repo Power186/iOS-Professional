@@ -26,12 +26,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         window?.makeKeyAndVisible()
         window?.backgroundColor = .systemBackground
         
-        loginViewController.delegate = self
-        onboardingContainerViewController.delegate = self
-        dummyVC.logoutDelegate = self
+//        loginViewController.delegate = self
+//        onboardingContainerViewController.delegate = self
+//        dummyVC.logoutDelegate = self
+//
+//        mainViewController.selectedIndex = 1
         
-        window?.rootViewController = mainViewController
-        mainViewController.selectedIndex = 1
+        window?.rootViewController = AccountSummaryViewController()
         
         return true
     }
