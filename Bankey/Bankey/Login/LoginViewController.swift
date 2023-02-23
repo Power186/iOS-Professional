@@ -28,6 +28,13 @@ class LoginViewController: UIViewController {
     var password: String? {
         loginView.passwordTextField.text
     }
+    
+    // animation
+    var leadingEdgeOnScreen: CGFloat = 16
+    var leadingEdgeOffScreen: CGFloat = -1000
+    
+    var titleLeadingAnchor: NSLayoutConstraint?
+    var titleDetailLeadingAnchor: NSLayoutConstraint?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -42,6 +49,11 @@ class LoginViewController: UIViewController {
         loginView.usernameTextField.text?.removeAll()
         loginView.passwordTextField.text?.removeAll()
     }
+    
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        animate()
+    }
 
 }
 
@@ -55,6 +67,7 @@ extension LoginViewController {
         titleLabel.textAlignment = .center
         titleLabel.font = UIFont.preferredFont(forTextStyle: .largeTitle)
         titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.alpha = 0
         
         titleDetailLabel.translatesAutoresizingMaskIntoConstraints = false
         titleDetailLabel.text = "Your premium source for all things banking!"
@@ -62,6 +75,7 @@ extension LoginViewController {
         titleDetailLabel.font = UIFont.preferredFont(forTextStyle: .title3)
         titleDetailLabel.adjustsFontForContentSizeCategory = true
         titleDetailLabel.numberOfLines = 0
+        titleDetailLabel.alpha = 0
         
         signInButton.translatesAutoresizingMaskIntoConstraints = false
         signInButton.configuration = .filled()
@@ -86,15 +100,20 @@ extension LoginViewController {
         // titleLabel
         NSLayoutConstraint.activate([
             titleDetailLabel.topAnchor.constraint(equalToSystemSpacingBelow: titleLabel.bottomAnchor, multiplier: 3),
-            titleLabel.centerXAnchor.constraint(equalTo: view.centerXAnchor)
+            titleLabel.trailingAnchor.constraint(equalTo: loginView.trailingAnchor)
         ])
+        
+        titleLeadingAnchor = titleLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: leadingEdgeOffScreen)
+        titleLeadingAnchor?.isActive = true
         
         // titleDetailLabel
         NSLayoutConstraint.activate([
             loginView.topAnchor.constraint(equalToSystemSpacingBelow: titleDetailLabel.bottomAnchor, multiplier: 3),
-            titleDetailLabel.leadingAnchor.constraint(equalTo: loginView.leadingAnchor),
             titleDetailLabel.trailingAnchor.constraint(equalTo: loginView.trailingAnchor)
         ])
+        
+        titleDetailLeadingAnchor = titleDetailLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: leadingEdgeOffScreen)
+        titleDetailLeadingAnchor?.isActive = true
         
         // loginView
         NSLayoutConstraint.activate([
@@ -150,6 +169,35 @@ extension LoginViewController {
     private func configureView(withMessage message: String) {
         errorMessageLabel.isHidden = false
         errorMessageLabel.text = message
+    }
+    
+}
+
+// MARK: - Animations
+extension LoginViewController {
+    
+    private func animate() {
+        let duration = 1.0
+        
+        let animator1 = UIViewPropertyAnimator(duration: duration, curve: .easeInOut) { [weak self] in
+            self?.titleLeadingAnchor?.constant = self?.leadingEdgeOnScreen ?? 0
+//            self?.titleDetailLeadingAnchor?.constant = self?.leadingEdgeOnScreen ?? 0
+            self?.view.layoutIfNeeded()
+        }
+        animator1.startAnimation()
+        
+        let animator2 = UIViewPropertyAnimator(duration: duration, curve: .easeInOut) { [weak self] in
+            self?.titleDetailLeadingAnchor?.constant = self?.leadingEdgeOnScreen ?? 0
+            self?.view.layoutIfNeeded()
+        }
+        animator2.startAnimation(afterDelay: 0.2)
+        
+        let animator3 = UIViewPropertyAnimator(duration: duration * 2, curve: .easeInOut) { [weak self] in
+            self?.titleLabel.alpha = 1
+            self?.titleDetailLabel.alpha = 1
+            self?.view.layoutIfNeeded()
+        }
+        animator3.startAnimation(afterDelay: 0.2)
     }
     
 }
